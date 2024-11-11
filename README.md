@@ -32,6 +32,14 @@ PORT=3000
 node index.js
 ~~~
 
+
+# Docker Installation:
+- Using Docker Compose, we can run two containers: one for MySQL and the other for the API (Node.js/Express). This option will ensure the project's portability.
+~~~bash
+docker-compose up --build
+~~~
+
+
 # Postman:
 - You can find the Postman collection exported JSON file in the repository. The filename is: saraetkarim_API.postman_collection.json.
 
@@ -164,8 +172,4 @@ CREATE TABLE `shipment` (
 
 ~~~
 
-# Docker Installation:
-- Using Docker Compose, we can run two containers: one for MySQL and the other for the API (Node.js/Express). This option will ensure the project's portability.
-~~~bash
-docker-compose up --build
-~~~
+
