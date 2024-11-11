@@ -1,4 +1,3 @@
-// validators/userValidator.js
 const { body, param, validationResult } = require('express-validator');
 const customerService = require('../services/customerService');
 

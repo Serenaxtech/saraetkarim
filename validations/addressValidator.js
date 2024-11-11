@@ -1,4 +1,3 @@
-// validators/AddressValidator.js
 const { body, param, validationResult } = require('express-validator');
 
 const validateAddress = [
@@ -60,7 +59,7 @@ const validateAddressId = [
 ];
 
 const validateCustomerId = [
-  param('customerId') // Update this to match the parameter in the route
+  param('customerId')
     .isInt().withMessage('Customer ID must be an integer'),
 
   (req, res, next) => {
