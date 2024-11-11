@@ -1,6 +1,6 @@
 const express = require('express');
 const addressController = require('../controllers/addressController');
-const { validateAddress, validateAddressId, validateCustomerId } = require('../validations/AddressValidator');
+const { validateAddress, validateAddressId, validateCustomerId } = require('../validations/addressValidator');
 const authenticate = require('../middlewares/authenticate');
 const authorize = require('../middlewares/authorize');
 
