@@ -3,6 +3,9 @@
 # Project Setup:
 
 ## Install Dependencies
+- jsonwebtoken : This library helps create and verify tokens, which are like digital "badges" used to identify users. It’s often used in apps to make sure that users are who they say they are without needing to send a password every time.
+
+- bcrypt: This library is for safely storing passwords. It scrambles (or "hashes") passwords so that even if someone gets access to the data, they can’t easily read the actual passwords. It's great for making passwords more secure.
 ~~~bash
 npm install jsonwebtoken
 npm install bcrypt
