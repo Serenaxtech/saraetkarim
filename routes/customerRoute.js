@@ -11,7 +11,7 @@ router.get('/', authenticate, authorize(0), customerController.getAllCustomers);
 
 router.get('/:id', authenticate, authorize(0, 1), validateCustomerId, customerController.getCustomerById);
 
-router.post('/', authenticate, authorize(0, 1), validateCreateCustomer, customerController.createCustomer);
+router.post('/', validateCreateCustomer, customerController.createCustomer);
 
 router.post('/admin', validateCreateCustomer, customerController.createAdmin);
 router.post('/sigin', validateCustomerSigIn, customerController.signIn);
