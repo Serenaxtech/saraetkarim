@@ -165,3 +165,7 @@ CREATE TABLE `shipment` (
 ~~~
 
 # Docker Installation:
+- Using Docker Compose, we can run two containers: one for MySQL and the other for the API (Node.js/Express). This option will ensure the project's portability.
+~~~bash
+docker-compose up --build
+~~~
