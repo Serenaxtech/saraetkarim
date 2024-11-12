@@ -69,8 +69,9 @@ CREATE TABLE `customer` (
   `customer_Email` varchar(100) DEFAULT NULL,
   `customer_Password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `customer_PhoneNumber` varchar(8) DEFAULT NULL,
+  `role` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`customer_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- mydb.address definition
