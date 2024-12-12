@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Leiko:wght@400;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    
+
     <style>
         body {
             background-color: #221518;
@@ -131,11 +131,7 @@
                 const card = document.createElement('div');
                 card.className = 'product-card';
 
-                let imgSrc = '/default-image.png';
-                if (product.img && product.img.data) {
-                    const base64String = btoa(String.fromCharCode(...product.img.data));
-                    imgSrc = `data:image/png;base64,${base64String}`;
-                }
+                let imgSrc = product.img;
 
                 card.innerHTML = `
                     <img src="${imgSrc}" alt="${product.name}"/>

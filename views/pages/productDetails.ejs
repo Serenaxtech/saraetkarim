@@ -284,11 +284,7 @@
             productInfoEl.textContent = product.info;
             productIDEl.value = product.id;
 
-            let imgSrc = '/default-image.png';
-            if (product.img && product.img.data) {
-                const base64String = btoa(String.fromCharCode(...product.img.data));
-                imgSrc = `data:image/png;base64,${base64String}`;
-            }
+            let imgSrc = product.img;
             productImageEl.src = imgSrc;
             productImageEl.alt = product.name;
         }

@@ -250,11 +250,7 @@
                 const cartItemEl = document.createElement('div');
                 cartItemEl.className = 'cart-item';
 
-                let imgSrc = '/default-image.png';
-                if (product.img && product.img.data) {
-                    const base64String = btoa(String.fromCharCode(...product.img.data));
-                    imgSrc = `data:image/png;base64,${base64String}`;
-                }
+                let imgSrc = product.img;
 
                 cartItemEl.innerHTML = `
                     <img src="${imgSrc}" alt="${product.name}">

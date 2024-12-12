@@ -124,12 +124,10 @@ class ProductService {
 
 
     async updateProductQuantity(id, quantity) {
-        const { stock_quantity } = quantity;
-
         // Update the product in the database
         const [result] = await this.pool.query(
             'UPDATE product SET stock_quantity = ? WHERE product_ID = ?',
-            [stock_quantity, id]
+            [quantity, id]
         );
 
         return result.affectedRows > 0;
