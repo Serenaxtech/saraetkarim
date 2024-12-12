@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Select Address</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Leiko:wght@400;700&display=swap">
+    <style>
+        body {
+            background-color: #221518;
+            color: #F7E1BC;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Leiko', sans-serif;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .address-list {
+            margin-bottom: 40px;
+        }
+
+        .address-item {
+            background-color: #54372B;
+            border: 2px solid #F7E1BC;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .address-item input[type="radio"] {
+            margin-top: 5px;
+        }
+
+        .address-details p {
+            margin: 5px 0;
+        }
+
+        .add-address-form {
+            background-color: #54372B;
+            border: 2px solid #F7E1BC;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .add-address-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .add-address-form input[type="text"] {
+            background-color: #F7E1BC;
+            color: #54372B;
+            border: 1px solid #54372B;
+            border-radius: 4px;
+            padding: 5px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background-color: #F7E1BC;
+            color: #54372B;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-family: 'Leiko', sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #54372B;
+            color: #F7E1BC;
+        }
+
+        .checkout-btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background-color: #F7E1BC;
+            color: #54372B;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-family: 'Leiko', sans-serif;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background-color: #54372B;
+            color: #F7E1BC;
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+    <h1>Select Address</h1>
+    <div class="container">
+        <div id="address-list" class="address-list"></div>
+
+        <div class="add-address-form">
+            <h2 style="font-family: 'Dancing Script', cursive; margin-top:0;">Add New Address</h2>
+            <label for="region">Region:</label>
+            <input type="text" id="region" name="region">
+
+            <label for="street">Street:</label>
+            <input type="text" id="street" name="street">
+
+            <label for="building">Building:</label>
+            <input type="text" id="building" name="building">
+
+            <label for="floor">Floor:</label>
+            <input type="text" id="floor" name="floor">
+
+            <button id="addAddressBtn" class="btn">Add Address</button>
+        </div>
+
+        <div class="checkout-btn-container">
+            <button id="checkoutBtn" class="btn">Checkout</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        const customerId = 14;
+
+        function showNotification(message, isError = false) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (isError) toast.classList.add('error');
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        async function fetchAddresses() {
+            const res = await fetch(`${API_URL}/api/address/customer/${customerId}`);
+            return res.json();
+        }
+
+        async function addAddress(data) {
+            const res = await fetch(`${API_URL}/api/address`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                showNotification('Address added successfully!');
+                loadAddresses();
+            } else {
+                showNotification('Failed to add address.', true);
+            }
+        }
+
+        async function fetchCartItems() {
+            const res = await fetch(`${API_URL}/api/cart/customer/${customerId}`);
+            return res.json();
+        }
+
+        async function createOrder(cartId) {
+            const res = await fetch(`${API_URL}/api/orders`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ cart_ID: cartId })
+            });
+            return res.ok;
+        }
+
+        async function loadAddresses() {
+            const addressListEl = document.getElementById('address-list');
+            addressListEl.innerHTML = '';
+            const addresses = await fetchAddresses();
+            if (!addresses || addresses.length === 0) {
+                addressListEl.innerHTML = '<p>No addresses found. Add a new one below.</p>';
+                return;
+            }
+
+            addresses.forEach(addr => {
+                const item = document.createElement('div');
+                item.className = 'address-item';
+                item.innerHTML = `
+                    <input type="radio" name="selectedAddress" value="${addr.id}">
+                    <div class="address-details">
+                        <p><strong>Region:</strong> ${addr.region}</p>
+                        <p><strong>Street:</strong> ${addr.street}</p>
+                        <p><strong>Building:</strong> ${addr.building}</p>
+                        <p><strong>Floor:</strong> ${addr.floor}</p>
+                    </div>
+                `;
+                addressListEl.appendChild(item);
+            });
+        }
+
+        document.getElementById('addAddressBtn').addEventListener('click', async () => {
+            const region = document.getElementById('region').value;
+            const street = document.getElementById('street').value;
+            const building = document.getElementById('building').value;
+            const floor = document.getElementById('floor').value;
+
+            if (!region || !street || !building || !floor) {
+                showNotification('Please fill in all address fields.', true);
+                return;
+            }
+
+            await addAddress({
+                region, street, building, floor, customer_ID: parseInt(customerId)
+            });
+
+            // clear fields
+            document.getElementById('region').value = '';
+            document.getElementById('street').value = '';
+            document.getElementById('building').value = '';
+            document.getElementById('floor').value = '';
+        });
+
+        document.getElementById('checkoutBtn').addEventListener('click', async () => {
+            const selected = document.querySelector('input[name="selectedAddress"]:checked');
+            if (!selected) {
+                showNotification('Please select an address or add a new one.', true);
+                return;
+            }
+
+            // At this point, we assume user selected address and we proceed to create orders
+            const cartItems = await fetchCartItems();
+            if (!cartItems || cartItems.length === 0) {
+                showNotification('No items in cart to order.', true);
+                return;
+            }
+
+            // Create orders for each cart item
+            for (const item of cartItems) {
+                const success = await createOrder(item.cart_ID);
+                if (!success) {
+                    showNotification('Failed to create one of the orders.', true);
+                    return;
+                }
+            }
+
+            showNotification('Order placed successfully!');
+            setTimeout(() => {
+                window.location.href = '/thankyou';
+            }, 2000);
+        });
+
+        loadAddresses();
+    </script>
+</body>
+</html>

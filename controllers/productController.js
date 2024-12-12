@@ -20,6 +20,24 @@ class ProductController {
         }
     }
 
+
+    /**
+     * Get all products.
+     * @param {Object} req - Express request object.
+     * @param {Object} res - Express response object.
+     */
+        async getAllProductsInStock(req, res) {
+            try {
+                // Fetch all products from the service
+                const products = await productService.getAllProductsInStock();
+                res.json(products);
+            } catch (error) {
+                console.error('Error fetching all products:', error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        }
+
+
     /**
      * Get a product by its ID.
      * @param {Object} req - Express request object containing the product ID.

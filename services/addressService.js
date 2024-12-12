@@ -35,7 +35,8 @@ class addressService {
     async getaddressByCustId(id) {
         const [rows] = await this.pool.query('SELECT * FROM address WHERE customer_ID = ?', [id]);
         if (rows.length === 0) return null;
-        return address.fromRow(rows[0]);
+        
+        return rows.map(address.fromRow);
     }
 
     /**

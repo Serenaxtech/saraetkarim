@@ -9,11 +9,12 @@ const jwt = require('jsonwebtoken');
  */
 const authenticate = (req, res, next) => {
     // Extract token from the Authorization header if it exists
-    const token = req.headers.authorization?.split(' ')[1];
+    // OLD: const token = req.headers.authorization?.split(' ')[1];
+    const token = req.cookies.authToken;
 
     // If no token is provided, respond with 401 Unauthorized
     if (!token) {
-        return res.status(401).json({ message: 'Access token is missing or invalid' });
+        return res.redirect('/login');
     }
 
     try {
@@ -25,7 +26,8 @@ const authenticate = (req, res, next) => {
         next();
     } catch (error) {
         // If token verification fails, respond with 401 Unauthorized
-        res.status(401).json({ message: 'Invalid or expired token' });
+        // res.status(401).json({ message: 'Invalid or expired token' });
+        return res.redirect('/login');
     }
 };
 

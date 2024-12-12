@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <title>Sign In / Sign Up</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Dancing Script and Leko (or choose a similar font if Leko not available) -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Leko:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --brown-dark: #452F22; 
+            --brown-medium: #5C3A28;
+            --brown-light: #A48464;
+            --cream: #F5E9D5;
+            --background: #A48464;
+
+            --font-heading: 'Dancing Script', cursive;
+            --font-body: 'Leko', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            font-family: var(--font-body);
+            color: var(--brown-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            color: var(--brown-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--brown-dark);
+            margin: 0;
+        }
+
+        .auth-container {
+            background: var(--cream);
+            border-radius: 10px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .toggle-buttons {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-buttons button {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            font-family: var(--font-body);
+            font-weight: 700;
+            cursor: pointer;
+            background: var(--brown-dark);
+            color: var(--cream);
+            transition: background 0.3s;
+        }
+
+        .toggle-buttons button.active {
+            background: var(--brown-medium);
+        }
+
+        .auth-form {
+            display: none; /* hidden by default, shown when active */
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-form h2 {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: var(--font-body);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: var(--brown-dark);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: 2px solid var(--brown-medium);
+            font-family: var(--font-body);
+            outline: none;
+            font-size: 1rem;
+            color: var(--brown-dark);
+        }
+
+        .form-group input:focus {
+            border-color: var(--brown-dark);
+        }
+
+        .btn-submit {
+            display: inline-block;
+            background-color: var(--brown-dark);
+            color: var(--cream);
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            font-weight: 700;
+            font-family: var(--font-body);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--brown-medium);
+        }
+
+        .btn-submit:disabled {
+            background-color: var(--brown-light);
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 1rem;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .message.success {
+            color: green;
+        }
+
+        .message.error {
+            color: red;
+        }
+
+        ul {
+            padding: 0;
+            list-style: none;
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2.5rem;
+            }
+
+            .auth-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to "Sara et Karim"</h1>
+    </header>
+
+    <div class="auth-container">
+        <div class="toggle-buttons">
+            <button id="showSignIn" class="active">Sign In</button>
+            <button id="showSignUp">Sign Up</button>
+        </div>
+
+        <!-- Sign In Form -->
+        <form id="signInForm" class="auth-form active">
+            <h2>Sign In</h2>
+            <div class="form-group">
+                <label for="si_email">Email Address</label>
+                <input type="email" id="si_email" name="si_email" placeholder="yourname@example.com" required />
+            </div>
+
+            <div class="form-group">
+                <label for="si_password">Password</label>
+                <input type="password" id="si_password" name="si_password" placeholder="********" required />
+            </div>
+
+            <button class="btn-submit" type="submit">Sign In</button>
+            <div class="message" id="signInMessageBox"></div>
+        </form>
+
+        <!-- Sign Up Form -->
+        <form id="signUpForm" class="auth-form">
+            <h2>Sign Up</h2>
+            <div class="form-group">
+                <label for="su_name">Full Name</label>
+                <input type="text" id="su_name" name="su_name" placeholder="John Doe" required />
+            </div>
+
+            <div class="form-group">
+                <label for="su_email">Email Address</label>
+                <input type="email" id="su_email" name="su_email" placeholder="yourname@example.com" required />
+            </div>
+
+            <div class="form-group">
+                <label for="su_password">Password</label>
+                <input type="password" id="su_password" name="su_password" placeholder="********" required />
+            </div>
+
+            <div class="form-group">
+                <label for="su_number">Phone Number</label>
+                <input type="text" id="su_number" name="su_number" placeholder="12345678" required />
+            </div>
+
+            <button class="btn-submit" type="submit">Create Account</button>
+            <div class="message" id="signUpMessageBox"></div>
+        </form>
+    </div>
+
+    <script>
+        const signInButton = document.getElementById('showSignIn');
+        const signUpButton = document.getElementById('showSignUp');
+        const signInForm = document.getElementById('signInForm');
+        const signUpForm = document.getElementById('signUpForm');
+
+        signInButton.addEventListener('click', () => {
+            signInButton.classList.add('active');
+            signUpButton.classList.remove('active');
+            signInForm.classList.add('active');
+            signUpForm.classList.remove('active');
+        });
+
+        signUpButton.addEventListener('click', () => {
+            signUpButton.classList.add('active');
+            signInButton.classList.remove('active');
+            signUpForm.classList.add('active');
+            signInForm.classList.remove('active');
+        });
+
+        // Sign In logic
+        const signInMessageBox = document.getElementById('signInMessageBox');
+        const signInSubmitButton = signInForm.querySelector('button[type="submit"]');
+
+        signInForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    signInMessageBox.textContent = '';
+    signInMessageBox.className = 'message';
+    signInSubmitButton.disabled = true;
+    signInSubmitButton.textContent = 'Signing In...';
+
+    const email = signInForm.si_email.value.trim();
+    const password = signInForm.si_password.value.trim();
+
+    try {
+        const response = await fetch('http://localhost:3000/api/customers/sigin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // Sign in successful
+            const token = result.token;
+            // Store token locally (in localStorage, for example)
+            localStorage.setItem('authToken', token);
+            signInMessageBox.textContent = 'Signed in successfully!';
+            signInMessageBox.classList.add('success');
+            signInForm.reset();
+
+            // Redirect to the /profile endpoint
+            window.location.href = '/profile';
+        } else {
+            // Sign in error
+            handleErrorResponse(result, signInMessageBox);
+        }
+        } catch (error) {
+            console.error(error);
+            signInMessageBox.textContent = 'Network error. Please check your connection.';
+            signInMessageBox.classList.add('error');
+        } finally {
+            signInSubmitButton.disabled = false;
+            signInSubmitButton.textContent = 'Sign In';
+        }
+    });
+
+
+        // Sign Up logic
+        const signUpMessageBox = document.getElementById('signUpMessageBox');
+        const signUpSubmitButton = signUpForm.querySelector('button[type="submit"]');
+
+        signUpForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            signUpMessageBox.textContent = '';
+            signUpMessageBox.className = 'message';
+            signUpSubmitButton.disabled = true;
+            signUpSubmitButton.textContent = 'Creating...';
+
+            const name = signUpForm.su_name.value.trim();
+            const email = signUpForm.su_email.value.trim();
+            const password = signUpForm.su_password.value.trim();
+            const number = signUpForm.su_number.value.trim();
+
+            try {
+                const response = await fetch('http://localhost:3000/api/customers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password, number })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    signUpMessageBox.textContent = 'Account created successfully!';
+                    signUpMessageBox.classList.add('success');
+                    signUpForm.reset();
+                } else {
+                    // Sign up error
+                    handleErrorResponse(result, signUpMessageBox);
+                }
+            } catch (error) {
+                console.error(error);
+                signUpMessageBox.textContent = 'Network error. Please check your connection.';
+                signUpMessageBox.classList.add('error');
+            } finally {
+                signUpSubmitButton.disabled = false;
+                signUpSubmitButton.textContent = 'Create Account';
+            }
+        });
+
+        function handleErrorResponse(result, messageBox) {
+            messageBox.textContent = '';
+            messageBox.className = 'message error';
+
+            if (Array.isArray(result.errors) && result.errors.length > 0) {
+                const errorList = document.createElement('ul');
+                errorList.style.listStyleType = 'none';
+                errorList.style.padding = '0';
+
+                result.errors.forEach(err => {
+                    const li = document.createElement('li');
+                    li.style.marginBottom = '0.5rem';
+                    li.textContent = err.msg;
+                    errorList.appendChild(li);
+                });
+
+                messageBox.appendChild(errorList);
+            } else {
+                messageBox.textContent = result.error || '';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv'); 
+const path = require('path');
 const customerRoutes = require('./routes/customerRoute'); 
 const addressRoutes = require('./routes/addressRoute'); 
 const reviewRoutes = require('./routes/reviewRoute');
@@ -9,9 +10,20 @@ const customizationRoutes = require('./routes/customizationRoute');
 const cartRoutes = require('./routes/cartRoute');
 const ordersRoutes = require('./routes/ordersRoute');
 const shipmentRoutes = require('./routes/shipmentRoute');
+const cookieParser = require('cookie-parser');
+const authenticate = require('./middlewares/authenticate');
+const authorize = require('./middlewares/authorize');
 
 dotenv.config(); 
 const app = express();
+
+// Set EJS as templating engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 
 // Middleware
 app.use(express.json());
@@ -30,9 +42,44 @@ app.use('/api/shipments', shipmentRoutes);
 
 
 
-// Basic Route
+// // Basic Route
+// app.get('/', (req, res) => {
+//   res.send('Welcome to Sara et Karim eCommerce!');
+// });
+
 app.get('/', (req, res) => {
-  res.send('Welcome to Sara et Karim eCommerce!');
+    res.render('index'); // Main page
+});
+
+app.get('/login', (req, res) => {
+  res.render('pages/signup');
+});
+
+app.get('/profile', authenticate, (req, res) => {
+  res.render('pages/profile', { customerId: req.user.id });
+});
+
+app.get('/products', authenticate, (req, res) => {
+  res.render('pages/products');
+});
+
+
+app.get('/products/:id', (req, res) => {
+  res.render('pages/productDetails', { productId: req.params.id });
+});
+
+
+app.get('/cart', authenticate, (req, res) => {
+  res.render('pages/cart', { customerId: req.user.id });
+});
+
+app.get('/address', authenticate, (req, res) => {
+  res.render('pages/address');
+});
+
+
+app.get('/thankyou', authenticate, (req, res) => {
+  res.render('pages/thankYou');
 });
 
 

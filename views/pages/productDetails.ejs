@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Product Details</title>
+    <!-- Load fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Leiko:wght@400;700&display=swap">
+
+    <style>
+        body {
+            background-color: #221518;
+            color: #F7E1BC;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Leiko', sans-serif;
+            position: relative;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Dancing Script', cursive;
+            color: #F7E1BC;
+            margin-top: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .product-details-container {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+            align-items: flex-start;
+            border-bottom: 1px solid #F7E1BC;
+            padding-bottom: 20px;
+        }
+
+        .product-img {
+            max-width: 300px;
+            border: 2px solid #F7E1BC;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        p {
+            font-family: 'Leiko', sans-serif;
+            line-height: 1.5;
+            margin: 10px 0;
+        }
+
+        a {
+            color: #F7E1BC;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Form and button styling */
+        form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="number"], textarea {
+            background-color: #F7E1BC;
+            color: #54372B;
+            border: 1px solid #54372B;
+            border-radius: 4px;
+            padding: 5px;
+            font-family: 'Leiko', sans-serif;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #F7E1BC;
+            color: #54372B;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-family: 'Leiko', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            align-self: flex-start;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #54372B;
+            color: #F7E1BC;
+        }
+
+        .reviews {
+            margin-top: 40px;
+        }
+
+        .reviews h2 {
+            margin-bottom: 10px;
+        }
+
+        .star {
+            font-size: 24px;
+            cursor: pointer;
+            color: #ccc;
+            margin-right: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .star:hover, .star.selected {
+            color: gold;
+        }
+
+        .review-item {
+            border-bottom: 1px solid #F7E1BC;
+            padding: 10px 0;
+        }
+
+        #reviews-list p {
+            margin: 5px 0;
+        }
+
+        #starContainer {
+            margin-bottom: 10px;
+        }
+
+        /* Review form styling */
+        #reviewForm {
+            margin-top: 20px;
+            border: 1px solid #F7E1BC;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #54372B;
+        }
+
+        #reviewForm label {
+            color: #F7E1BC;
+        }
+
+        #review_Text {
+            width: 100%;
+        }
+
+        /* Add to cart section styling */
+        #addToCartForm {
+            border: 1px solid #F7E1BC;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #54372B;
+        }
+
+        #addToCartForm label {
+            color: #F7E1BC;
+        }
+
+        /* Product info section */
+        .product-info-section p strong {
+            display: inline-block;
+            width: 100px;
+        }
+
+        /* Toast (Notification) Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background-color: #F7E1BC;
+            color: #54372B;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-family: 'Leiko', sans-serif;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background-color: #54372B;
+            color: #F7E1BC;
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="container">
+        <h1 id="product-name"></h1>
+        <div class="product-details-container">
+            <img id="product-image" class="product-img" alt="Product Image"/>
+            <div class="product-info-section">
+                <p><strong>Price:</strong> $<span id="product-price"></span></p>
+                <p><strong>Description:</strong> <span id="product-description"></span></p>
+                <p><strong>Info:</strong> <span id="product-info"></span></p>
+
+                <!-- Add to Cart Form -->
+                <form id="addToCartForm">
+                    <input type="hidden" name="product_ID" id="productID" value="<%= productId %>">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" name="quantity" id="quantity" min="1" value="1">
+                    <button type="submit">Add to Cart</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="reviews">
+            <h2>Reviews</h2>
+            <div id="reviews-list"></div>
+        </div>
+
+        <!-- Submit a Review -->
+        <h2>Submit Your Review</h2>
+        <form id="reviewForm">
+            <input type="hidden" name="product_ID" value="<%= productId %>">
+            <input type="hidden" name="rating" id="ratingInput" value="0">
+            
+            <div id="starContainer">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+            </div>
+            
+            <label for="review_Text">Your Review:</label>
+            <textarea name="review_Text" id="review_Text" rows="5"></textarea>
+            <button type="submit">Submit Review</button>
+        </form>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        const productId = '<%= productId %>';
+
+        async function fetchProductDetails(id) {
+            const res = await fetch(`${API_URL}/api/products/${id}`);
+            const product = await res.json();
+            return product
+        }
+
+        async function fetchProductReviews(id) {
+            const res = await fetch(`${API_URL}/api/reviews/product/${id}`);
+            return res.json();
+        }
+
+        function renderProductDetails(product) {
+            const productNameEl = document.getElementById('product-name');
+            const productImageEl = document.getElementById('product-image');
+            const productPriceEl = document.getElementById('product-price');
+            const productDescEl = document.getElementById('product-description');
+            const productInfoEl = document.getElementById('product-info');
+            const productIDEl = document.getElementById('productID');
+            const quantityInputEl = document.getElementById('quantity');
+
+
+            if (product.stock_quantity) {
+                quantityInputEl.max = product.stock_quantity;
+            }
+
+            productNameEl.textContent = product.name;
+            productPriceEl.textContent = product.price;
+            productDescEl.textContent = product.description;
+            productInfoEl.textContent = product.info;
+            productIDEl.value = product.id;
+
+            let imgSrc = '/default-image.png';
+            if (product.img && product.img.data) {
+                const base64String = btoa(String.fromCharCode(...product.img.data));
+                imgSrc = `data:image/png;base64,${base64String}`;
+            }
+            productImageEl.src = imgSrc;
+            productImageEl.alt = product.name;
+        }
+
+        function renderReviews(reviews) {
+            const reviewsList = document.getElementById('reviews-list');
+            reviewsList.innerHTML = '';
+            if (!reviews || reviews.length === 0) {
+                reviewsList.innerHTML = '<p>No reviews yet.</p>';
+                return;
+            }
+            reviews.forEach(review => {
+                const div = document.createElement('div');
+                div.className = 'review-item';
+                div.innerHTML = `
+                    <p><strong>Rating:</strong> ${review.rating} / 5</p>
+                    <p>${review.reviewtext}</p>
+                `;
+                reviewsList.appendChild(div);
+            });
+        }
+
+        function showNotification(message, isError = false) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (isError) toast.classList.add('error');
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            
+            // Force reflow to trigger CSS transitions
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Add to Cart
+        document.getElementById('addToCartForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const productID = document.getElementById('productID').value;
+            const quantity = document.getElementById('quantity').value;
+
+            const response = await fetch(`${API_URL}/api/cart`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ product_ID: parseInt(productID), quantity: parseInt(quantity) })
+            });
+            if (response.ok) {
+                showNotification('Product added to cart successfully!');
+            } else {
+                showNotification('Failed to add product to cart.', true);
+            }
+        });
+
+        // Review stars
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('ratingInput');
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = star.getAttribute('data-value');
+                ratingInput.value = rating;
+                stars.forEach(s => s.classList.remove('selected'));
+                for (let i = 0; i < rating; i++) {
+                    stars[i].classList.add('selected');
+                }
+            });
+        });
+
+        // Submit Review with validation error handling
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const product_ID = parseInt(productId);
+            const rating = parseInt(ratingInput.value);
+            const review_Text = document.getElementById('review_Text').value;
+
+            const response = await fetch(`${API_URL}/api/reviews`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ product_ID, rating, review_Text })
+            });
+
+            if (response.ok) {
+                showNotification('Review submitted successfully!');
+                const reviews = await fetchProductReviews(productId);
+                renderReviews(reviews);
+                document.getElementById('reviewForm').reset();
+                ratingInput.value = '0';
+                stars.forEach(s => s.classList.remove('selected'));
+            } else {
+                // If validation errors occur
+                try {
+                    const errorData = await response.json();
+                    if (errorData.errors && Array.isArray(errorData.errors)) {
+                        errorData.errors.forEach(err => {
+                            showNotification(err.msg, true);
+                        });
+                    } else {
+                        showNotification('Failed to submit review.', true);
+                    }
+                } catch (err) {
+                    showNotification('Failed to submit review.', true);
+                }
+            }
+        });
+
+        async function init() {
+            const product = await fetchProductDetails(productId);
+            if (!product) {
+                document.body.innerHTML = '<h1>Product not found</h1>';
+                return;
+            }
+            renderProductDetails(product);
+
+            const reviews = await fetchProductReviews(productId);
+            renderReviews(reviews);
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 const ordersService = require('../services/ordersService');
-
+const productService = require('../services/productService');
+const cartService = require('../services/cartService');
 /**
  * Controller class for managing orders.
  */
@@ -56,6 +57,15 @@ class OrdersController {
             const { cart_ID } = req.body;
 
             // Create a new order using the cart ID and customer ID
+            const cartData = await cartService.getCartItemById(cart_ID);
+            console.log(cartData);
+            const productData = await productService.getProductById(cartData.prodId);
+            console.log(productData);
+            const new_quantity = productData.stock_quantity - cartData.quantity;
+            console.log(new_quantity);
+
+            await productService.updateProductQuantity(productData.id, new_quantity)
+
             const newOrder = await ordersService.createOrder(cart_ID, customerID);
             res.status(201).json(newOrder);
         } catch (error) {

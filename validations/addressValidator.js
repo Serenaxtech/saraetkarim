@@ -30,12 +30,6 @@ const validateAddress = [
     .isString()
     .withMessage('More details must be a string'),
 
-  body('customer_ID')
-    .isInt()
-    .withMessage('Customer ID must be an integer')
-    .notEmpty()
-    .withMessage('Customer ID is required'),
-
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

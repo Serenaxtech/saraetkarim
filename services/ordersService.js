@@ -72,32 +72,40 @@ class OrdersService {
         try {
             // Verify that the cart exists and belongs to the customer
             const [cartRows] = await this.pool.query(
-                'SELECT customer_ID FROM cart WHERE cart_ID = ?',
+                'SELECT customer_ID, status FROM cart WHERE cart_ID = ?',
                 [cartId]
             );
-
+    
             if (cartRows.length === 0) {
                 throw new Error('Cart not found');
             }
-
-            const cartOwnerID = cartRows[0].customer_ID;
+    
+            const { customer_ID: cartOwnerID, status } = cartRows[0];
             if (cartOwnerID !== customerID) {
                 throw new Error('Access denied: You are not allowed to create an order for this cart');
             }
-
-            // Insert the new order into the database
+            if (status !== 'active') {
+                throw new Error('Cart has already been checked out');
+            }
+    
             const [result] = await this.pool.query(
                 'INSERT INTO orders (cart_ID) VALUES (?)',
                 [cartId]
             );
+    
 
+            await this.pool.query(
+                'UPDATE cart SET status = "checked_out" WHERE cart_ID = ?',
+                [cartId]
+            );
+    
             return new Orders(result.insertId, cartId);
         } catch (error) {
-            
             throw error;
         }
     }
 
+    
     /**
      * Delete an order by its ID, ensuring the requesting customer has access.
      * @param {number} id - The ID of the order to delete.

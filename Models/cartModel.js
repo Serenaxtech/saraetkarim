@@ -1,9 +1,10 @@
 class Cart {
-    constructor(id, custId, prodId, quantity) {
+    constructor(id, custId, prodId, quantity, status) {
       this.id = id;
       this.custId = custId;
       this.prodId = prodId;
       this.quantity = quantity;
+      this.status = status;
     }
   
     // Static method to map database row to User model
@@ -14,7 +15,8 @@ class Cart {
         row.cart_ID,
         row.customer_ID,
         row.product_ID,
-        row.quantity
+        row.quantity,
+        row.status
       );
     }
   }

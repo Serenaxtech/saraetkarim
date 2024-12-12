@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Cart</title>
+    <!-- Load fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Leiko:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/navbar_style.css">
+
+    <style>
+        body {
+            background-color: #221518;
+            color: #F7E1BC;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Leiko', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Dancing Script', cursive;
+            color: #F7E1BC;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cart-items {
+            margin-bottom: 40px;
+        }
+
+        .cart-item {
+            background-color: #54372B;
+            border: 2px solid #F7E1BC;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .cart-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #F7E1BC;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-details h2 {
+            margin: 0 0 5px;
+            font-size: 1.2em;
+        }
+
+        .cart-item-details p {
+            margin: 5px 0;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .cart-item-actions input[type="number"] {
+            background-color: #F7E1BC;
+            color: #54372B;
+            border: 1px solid #54372B;
+            border-radius: 4px;
+            padding: 5px;
+            width: 60px;
+            font-family: 'Leiko', sans-serif;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #F7E1BC;
+            color: #54372B;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-family: 'Leiko', sans-serif;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #54372B;
+            color: #F7E1BC;
+        }
+
+        .cart-summary {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .cart-summary p {
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+
+        /* Toast (Notification) Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background-color: #F7E1BC;
+            color: #54372B;
+            border-radius: 4px;
+            padding: 10px 15px;
+            font-family: 'Leiko', sans-serif;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.error {
+            background-color: #54372B;
+            color: #F7E1BC;
+        }
+
+        .place-order-btn {
+            display: block;
+            margin: 40px auto 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-container" id="toastContainer"></div>
+    <h1>Your Cart</h1>
+    <div class="container">
+        <div id="cart-items" class="cart-items"></div>
+        <div class="cart-summary">
+            <p>Total: $<span id="cart-total">0.00</span></p>
+        </div>
+        <div class="place-order-btn">
+            <a href="/address" class="btn">Place Order</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        const customerId = <%= JSON.stringify(customerId) %>;
+
+        async function fetchCartItems() {
+            const res = await fetch(`${API_URL}/api/cart/customer/${customerId}`);
+            return res.json();
+        }
+
+        async function fetchProductDetails(productId) {
+            const res = await fetch(`${API_URL}/api/products/${productId}`);
+            return res.json();
+        }
+
+        async function fetchCartTotal() {
+            const res = await fetch(`${API_URL}/api/cart/total`);
+            const data = await res.json();
+            return data.total;
+        }
+
+        function showNotification(message, isError = false) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (isError) toast.classList.add('error');
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+            
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        async function deleteCartItem(cartId) {
+            const response = await fetch(`${API_URL}/api/cart/${cartId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                showNotification('Item deleted from cart.');
+                await loadCartData();
+            } else {
+                showNotification('Failed to delete item.', true);
+            }
+        }
+
+        async function updateCartItem(cartId, quantity) {
+            const response = await fetch(`${API_URL}/api/cart/${cartId}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ quantity: parseInt(quantity) })
+            });
+            if (response.ok) {
+                showNotification('Item updated.');
+                await loadCartData();
+            } else {
+                showNotification('Failed to update item.', true);
+            }
+        }
+
+        async function loadCartData() {
+            const cartItemsEl = document.getElementById('cart-items');
+            cartItemsEl.innerHTML = '';
+            const items = await fetchCartItems();
+
+            // If no items, show a message
+            if (!items || items.length === 0) {
+                cartItemsEl.innerHTML = '<p>Your cart is empty.</p>';
+                document.getElementById('cart-total').textContent = '0.00';
+                return;
+            }
+
+            for (const item of items) {
+                const product = await fetchProductDetails(item.product_ID);
+                const cartItemEl = document.createElement('div');
+                cartItemEl.className = 'cart-item';
+
+                let imgSrc = '/default-image.png';
+                if (product.img && product.img.data) {
+                    const base64String = btoa(String.fromCharCode(...product.img.data));
+                    imgSrc = `data:image/png;base64,${base64String}`;
+                }
+
+                cartItemEl.innerHTML = `
+                    <img src="${imgSrc}" alt="${product.name}">
+                    <div class="cart-item-details">
+                        <h2>${product.name}</h2>
+                        <p>Price: $${product.price}</p>
+                    </div>
+                    <div class="cart-item-actions">
+                        <input type="number" min="1" value="${item.quantity}">
+                        <button class="btn update-btn">Update</button>
+                        <button class="btn delete-btn">Delete</button>
+                    </div>
+                `;
+
+                const updateBtn = cartItemEl.querySelector('.update-btn');
+                const deleteBtn = cartItemEl.querySelector('.delete-btn');
+                const quantityInput = cartItemEl.querySelector('input[type="number"]');
+
+                updateBtn.addEventListener('click', async () => {
+                    const newQuantity = quantityInput.value;
+                    if (newQuantity <= 0) {
+                        showNotification('Quantity must be at least 1.', true);
+                        return;
+                    }
+                    await updateCartItem(item.cart_ID, newQuantity);
+                });
+
+                deleteBtn.addEventListener('click', async () => {
+                    await deleteCartItem(item.cart_ID);
+                });
+
+                cartItemsEl.appendChild(cartItemEl);
+            }
+
+            const total = await fetchCartTotal();
+            document.getElementById('cart-total').textContent = total.toFixed(2);
+        }
+
+        (async function init() {
+            await loadCartData();
+        })();
+    </script>
+</body>
+</html>

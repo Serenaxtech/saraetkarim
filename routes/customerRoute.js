@@ -21,4 +21,5 @@ router.put('/:id?', authenticate, authorize(0, 1), [validateCustomerId, validate
 
 router.delete('/:id', authenticate, authorize(0, 1), validateCustomerId, customerController.deleteCustomer);
 
+
 module.exports = router;

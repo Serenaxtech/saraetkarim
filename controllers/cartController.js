@@ -1,4 +1,5 @@
 const cartService = require('../services/cartService');
+const productService = require('../services/productService');
 
 /**
  * Controller class for managing cart-related operations.
@@ -40,6 +41,25 @@ class CartController {
         }
     }
 
+
+    async getActiveCarts(req, res){
+        try {
+            const { customerID } = req.user.id;
+    
+            const activeCarts = await cartService.getActiveCarts(customerID);
+            
+            return res.status(200).json(activeCarts);
+        } catch (error) {
+            console.error('Error fetching active carts:', error);
+            
+            return res.status(500).json({
+                message: 'Failed to retrieve active carts',
+                error: error.message,
+            });
+        }
+    }
+
+
     /**
      * Get all cart items for a specific customer.
      * @param {Object} req - Express request object containing user information.
@@ -49,7 +69,7 @@ class CartController {
         try {
             const customerId = req.user.id;
             // Fetch cart items for the logged-in customer
-            const cartItems = await cartService.getCartItemsByCustomerId(customerId);
+            const cartItems = await cartService.getActiveCartsByCustomerId(customerId);
             res.json(cartItems);
         } catch (error) {
             console.error('Error fetching cart items by customer ID:', error);
@@ -66,9 +86,18 @@ class CartController {
         try {
             const customerId = req.user.id;
             const cartData = req.body;
-            // Add the new item to the cart
-            const newCartItem = await cartService.addToCart(cartData, customerId);
-            res.status(201).json(newCartItem);
+
+            const productDetails = await productService.getProductById(cartData.product_ID);
+            
+            const availableQuantity = productDetails.stock_quantity;
+
+            if (cartData.quantity > availableQuantity) {
+                res.status(404).json({message: 'Please select less quantity'});
+            } else {
+                // Add the new item to the cart
+                const newCartItem = await cartService.addToCart(cartData, customerId);
+                res.status(201).json(newCartItem);
+            }
         } catch (error) {
             console.error('Error adding item to cart:', error);
             res.status(500).json({ message: 'Internal server error' });

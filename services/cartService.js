@@ -56,11 +56,26 @@ class CartService {
     async addToCart(cartData, customer_ID) {
         const { product_ID, quantity } = cartData;
         const [result] = await this.pool.query(
-            'INSERT INTO cart (customer_ID, product_ID, quantity) VALUES (?, ?, ?)',
+            'INSERT INTO cart (customer_ID, product_ID, quantity, status) VALUES (?, ?, ?, "active")',
             [customer_ID, product_ID, quantity]
         );
-        return new Cart(result.insertId, customer_ID, product_ID, quantity);
+
+        return new Cart(result.insertId, customer_ID, product_ID, quantity, "active" );
     }
+
+    
+    /**
+     * Fetch all active carts for a specific customer.
+     * @param {number} customerID - The ID of the customer whose active carts are to be fetched.
+     */
+    async getActiveCartsByCustomerId(customerID) {
+        const [rows] = await this.pool.query(
+            'SELECT * FROM cart WHERE customer_ID = ? AND status = "active"',
+            [customerID]
+        );
+        return rows;
+    }
+    
 
     /**
      * Update an existing cart item.
@@ -103,7 +118,7 @@ class CartService {
                 SELECT c.quantity, p.product_Price
                 FROM cart AS c
                 JOIN product AS p ON c.product_ID = p.product_ID
-                WHERE c.customer_ID = ?
+                WHERE c.customer_ID = ? AND c.status = "active"
             `, [customerID]);
 
             // Calculate the total price by summing up the price of each item times its quantity

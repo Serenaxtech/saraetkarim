@@ -28,6 +28,16 @@ class ProductService {
     }
 
     /**
+     * Retrieve all products from the database.
+     * @returns {Promise<Array>} An array of product objects.
+     */
+        async getAllProductsInStock() {
+            const [rows] = await this.pool.query('SELECT * FROM product WHERE stock_quantity > 0');
+            // Map the rows to Product model instances
+            return rows.map(Product.fromRow);
+        }
+
+    /**
      * Get a product by its ID.
      * @param {number} id - The product ID.
      * @returns {Promise<Object|null>} The product object or null if not found.
@@ -63,12 +73,13 @@ class ProductService {
             product_Info,
             product_Price,
             category_ID,
+            stock_quantity
         } = productData;
 
         // Insert the new product into the database
         const [result] = await this.pool.query(
-            'INSERT INTO product (product_IMG, product_Name, product_Description, product_Info, product_Price, category_ID) VALUES (?, ?, ?, ?, ?, ?)',
-            [product_IMG, product_Name, product_Description, product_Info, product_Price, category_ID]
+            'INSERT INTO product (product_IMG, product_Name, product_Description, product_Info, product_Price, category_ID, stock_quantity) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [product_IMG, product_Name, product_Description, product_Info, product_Price, category_ID, stock_quantity]
         );
 
         const createdProduct = new Product(
@@ -78,8 +89,10 @@ class ProductService {
             product_Description,
             product_Info,
             product_Price,
-            category_ID
+            category_ID,
+            stock_quantity
         );
+
         return createdProduct;
     }
 
@@ -97,16 +110,31 @@ class ProductService {
             product_Info,
             product_Price,
             category_ID,
+            stock_quantity
         } = productData;
 
         // Update the product in the database
         const [result] = await this.pool.query(
-            'UPDATE product SET product_IMG = ?, product_Name = ?, product_Description = ?, product_Info = ?, product_Price = ?, category_ID = ? WHERE product_ID = ?',
-            [product_IMG, product_Name, product_Description, product_Info, product_Price, category_ID, id]
+            'UPDATE product SET product_IMG = ?, product_Name = ?, product_Description = ?, product_Info = ?, product_Price = ?, category_ID = ?, stock_quantity = ? WHERE product_ID = ?',
+            [product_IMG, product_Name, product_Description, product_Info, product_Price, category_ID, stock_quantity, id]
         );
 
         return result.affectedRows > 0;
     }
+
+
+    async updateProductQuantity(id, quantity) {
+        const { stock_quantity } = quantity;
+
+        // Update the product in the database
+        const [result] = await this.pool.query(
+            'UPDATE product SET stock_quantity = ? WHERE product_ID = ?',
+            [stock_quantity, id]
+        );
+
+        return result.affectedRows > 0;
+    }
+
 
     /**
      * Delete a product by its ID.

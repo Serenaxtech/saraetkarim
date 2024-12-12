@@ -1,5 +1,5 @@
 class Product {
-    constructor(id, name, img, description, info, price, custId ) {
+    constructor(id, name, img, description, info, price, custId, stock_quantity) {
       this.id = id;
       this.name = name;
       this.img = img;
@@ -7,6 +7,7 @@ class Product {
       this.info = info;
       this.price = price;
       this.custId = custId;
+      this.stock_quantity = stock_quantity;
     }
   
     // Static method to map database row to User model
@@ -20,7 +21,8 @@ class Product {
         row.product_Description,
         row.product_Info,
         row.product_Price,
-        row.category_ID
+        row.category_ID,
+        row.stock_quantity
       );
     }
   }

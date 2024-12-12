@@ -183,6 +183,14 @@ class customerController {
             const { email, password } = req.body;
             // Authenticate the customer and get a token
             const token = await customerService.signIn(email, password);
+
+            res.cookie('authToken', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 3600000,
+            });
+
             res.status(200).json({ token });
         } catch (error) {
             console.error('Error signing in customer:', error);

@@ -6,7 +6,7 @@ const authorize = require('../middlewares/authorize');
 
 const router = express.Router();
 
-router.get('/', authenticate, authorize(0, 1), productController.getAllProducts);
+router.get('/', authenticate, authorize(0, 1), productController.getAllProductsInStock);
 router.get('/:id', authenticate, authorize(0, 1), validateId, productController.getProductById);
 router.get('/category/:categoryId', authenticate, authorize(0, 1), validateCategoryId, productController.getProductByCategoryId);
 
