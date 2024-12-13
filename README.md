@@ -48,7 +48,8 @@ docker-compose up --build
 
 # Database
 ## ER Diagram:
-![image](https://github.com/user-attachments/assets/58384da5-703b-40e4-8bbe-6c412a3700d5)
+![image](https://github.com/user-attachments/assets/cbbe6c63-c793-468b-976b-819b7806f6f9)
+
 
 ## Schema:
 ~~~sql
